@@ -1,6 +1,6 @@
-const API = "https://script.google.com/macros/s/AKfycbxOqoshDTtdySg5ftuGTACXlyiFgBxFwOGobb-Llt67p1SAV4o-C3SDHx-oRiz1O2hvig/exec";
+const API = "https://script.google.com/macros/s/AKfycbzHyTwtjwaJSrc3DtBnO9ZC4HVqS4RUss4LGY_Z0Kre9l85jJFezObrUy5BXl_u0fo5Lw/exec";
 
-/* ---------------- UPLOAD (NO CORS PRE-FLIGHT) ---------------- */
+/* ---------------- UPLOAD (SAFE FORM POST) ---------------- */
 
 function upload() {
   const file = document.getElementById("file").files[0];
@@ -13,7 +13,6 @@ function upload() {
   reader.onload = (e) => {
     const base64 = e.target.result.split(",")[1];
 
-    // 🔥 IMPORTANT: use FORM POST instead of fetch JSON
     const form = document.createElement("form");
     form.method = "POST";
     form.action = API;
@@ -31,13 +30,13 @@ function upload() {
     form.appendChild(input);
     document.body.appendChild(form);
 
-    form.submit(); // NO CORS ERROR
+    form.submit();
   };
 
   reader.readAsDataURL(file);
 }
 
-/* ---------------- LOAD FILE (SAFE GET REQUEST) ---------------- */
+/* ---------------- LOAD FILE ---------------- */
 
 async function loadFile() {
   const code = document.getElementById("code").value;
@@ -60,11 +59,11 @@ async function loadFile() {
   let preview = "";
 
   if (data.mime.startsWith("image/")) {
-    preview = `<img src="${url}">`;
+    preview = `<img class="preview" src="${url}">`;
   } else if (data.mime.startsWith("video/")) {
-    preview = `<video controls src="${url}"></video>`;
+    preview = `<video class="preview" controls src="${url}"></video>`;
   } else if (data.mime.startsWith("audio/")) {
-    preview = `<audio controls src="${url}"></audio>`;
+    preview = `<audio class="preview" controls src="${url}"></audio>`;
   }
 
   document.getElementById("output").innerHTML = `
