@@ -1,12 +1,12 @@
 body {
   margin: 0;
-  font-family: system-ui;
+  font-family: system-ui, Arial;
   color: white;
   text-align: center;
   overflow-x: hidden;
 }
 
-/* animated gradient background */
+/* animated background */
 body::before {
   content: "";
   position: fixed;
@@ -23,21 +23,38 @@ body::before {
   100% { background-position: 0% 50%; }
 }
 
+/* main card */
 .card {
-  width: 90%;
+  width: 92%;
   max-width: 420px;
   margin: 60px auto;
   padding: 22px;
-  background: rgba(0,0,0,0.6);
   border-radius: 18px;
+  background: rgba(0,0,0,0.6);
   backdrop-filter: blur(14px);
   box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { transform: translateY(10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.hidden {
+  display: none;
+}
+
+.subtext {
+  font-size: 13px;
+  opacity: 0.7;
+  margin-bottom: 12px;
 }
 
 input {
   width: 100%;
   padding: 12px;
-  margin: 10px 0;
+  margin: 8px 0;
   border-radius: 10px;
   border: none;
   outline: none;
@@ -56,21 +73,38 @@ button {
   transition: 0.2s;
 }
 
+button:hover {
+  transform: scale(1.03);
+}
+
 button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-button:hover {
-  transform: scale(1.03);
-}
-
-.hidden {
-  display: none;
-}
-
-img, video {
-  width: 100%;
-  margin-top: 12px;
+/* file box */
+.file-box {
+  margin-top: 15px;
+  padding: 15px;
   border-radius: 12px;
+  background: rgba(255,255,255,0.08);
+}
+
+/* download button */
+.download-btn {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 10px;
+  background: #00c6ff;
+  border-radius: 8px;
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+/* preview */
+.preview {
+  margin-top: 10px;
+  width: 100%;
+  border-radius: 10px;
 }
