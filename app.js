@@ -1,23 +1,22 @@
-const API = "https://script.google.com/macros/s/AKfycbxL48kBadx5lhS0lo54jKsUUJknwAZ4Gv42eRJzjW-gnRrfUiVzo7-n5UQ1-dIG0jhhvw/exec";
+const API = "https://script.google.com/macros/s/AKfycbxOqoshDTtdySg5ftuGTACXlyiFgBxFwOGobb-Llt67p1SAV4o-C3SDHx-oRiz1O2hvig/exec";
 
 let uploading = false;
 
-/* ---------------- ROUTING ---------------- */
+/* ---------------- UI SWITCH ---------------- */
 
-function getSlug() {
-  const parts = window.location.pathname.split("/").filter(Boolean);
-  const i = parts.indexOf("file");
-  return (i !== -1 && parts[i + 1]) ? parts[i + 1] : null;
+function showUpload() {
+  document.getElementById("uploadPage").classList.remove("hidden");
+  document.getElementById("filePage").classList.add("hidden");
 }
 
-const slug = getSlug();
+function showAccess() {
+  document.getElementById("uploadPage").classList.add("hidden");
+  document.getElementById("filePage").classList.remove("hidden");
+}
 
-window.onload = () => {
-  document.getElementById("uploadPage").classList.toggle("hidden", !!slug);
-  document.getElementById("filePage").classList.toggle("hidden", !slug);
-};
+window.onload = showUpload;
 
-/* ---------------- UPLOAD (FIXED + SHOW CODE) ---------------- */
+/* ---------------- UPLOAD ---------------- */
 
 function upload() {
   if (uploading) return;
@@ -41,9 +40,7 @@ function upload() {
     try {
       const res = await fetch(API, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           action: "upload",
           base64,
@@ -60,14 +57,13 @@ function upload() {
       btn.innerText = "Upload File";
 
       if (data.success) {
-        const link = `${window.location.origin}/file/${data.id}`;
-
         document.getElementById("result").innerHTML = `
           <div class="file-box">
             <b>File Code:</b> ${data.id}<br><br>
-            <a class="download-btn" href="${link}">
-              Open File Page
-            </a>
+
+            <button onclick="openAccess('${data.id}')">
+              Open File
+            </button>
           </div>
         `;
       } else {
@@ -88,15 +84,20 @@ function upload() {
   reader.readAsDataURL(file);
 }
 
+/* ---------------- OPEN ACCESS ---------------- */
+
+function openAccess(code) {
+  showAccess();
+  document.getElementById("codeInput").value = code;
+}
+
 /* ---------------- LOAD FILE ---------------- */
 
 async function loadFile() {
   const pass = document.getElementById("filePass").value;
-  const code = document.getElementById("codeInput").value || slug;
+  const code = document.getElementById("codeInput").value;
 
-  if (!code || !pass) {
-    return alert("Enter code + password");
-  }
+  if (!code || !pass) return alert("Enter code + password");
 
   const res = await fetch(
     `${API}?action=get&id=${code}&password=${pass}`
