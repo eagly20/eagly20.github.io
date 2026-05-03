@@ -1,58 +1,74 @@
+* {
+  box-sizing: border-box;
+  font-family: system-ui, Arial;
+}
+
 body {
   margin: 0;
-  font-family: system-ui;
+  min-height: 100vh;
   color: white;
-  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   overflow-x: hidden;
 }
 
-body::before {
-  content: "";
+/* Animated gradient background */
+.background {
   position: fixed;
-  width: 200%;
-  height: 200%;
-  background: linear-gradient(45deg,#4facfe,#00f2fe,#a18cd1,#fbc2eb);
+  inset: 0;
+  background: linear-gradient(-45deg, #4facfe, #00f2fe, #a18cd1, #fbc2eb);
   background-size: 400% 400%;
-  animation: move 12s infinite linear;
+  animation: gradientMove 12s ease infinite;
   z-index: -1;
 }
 
-@keyframes move {
-  0% { transform: translate(0,0); }
-  50% { transform: translate(-15%,-15%); }
-  100% { transform: translate(0,0); }
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
+/* Glass card */
 .card {
-  background: rgba(0,0,0,0.65);
-  backdrop-filter: blur(12px);
-  padding: 25px;
-  margin: 50px auto;
   width: 90%;
-  max-width: 520px;
+  max-width: 420px;
+  padding: 25px;
   border-radius: 18px;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.4);
-  animation: fadeIn 0.6s ease;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+  text-align: center;
+  animation: fadeIn 0.5s ease;
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
 
-input, button {
+.hidden {
+  display: none;
+}
+
+input {
   width: 100%;
   padding: 12px;
   margin: 10px 0;
-  border-radius: 10px;
   border: none;
-  font-size: 14px;
+  border-radius: 10px;
+  outline: none;
 }
 
 button {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
   background: #00c6ff;
   color: white;
   font-weight: bold;
+  cursor: pointer;
   transition: 0.2s;
 }
 
@@ -61,8 +77,12 @@ button:disabled {
   cursor: not-allowed;
 }
 
+button:hover:not(:disabled) {
+  transform: scale(1.03);
+}
+
 img, video {
-  max-width: 100%;
+  width: 100%;
+  margin-top: 15px;
   border-radius: 12px;
-  margin-top: 10px;
 }
