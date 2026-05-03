@@ -9,27 +9,36 @@
 
 <body>
 
+<!-- UPLOAD PAGE -->
 <div id="uploadPage" class="card">
+
   <h1>Cloud Locker</h1>
+  <p class="subtext">Upload a file and get a secure access code</p>
 
   <input type="file" id="file">
   <input type="password" id="pass" placeholder="Set Password">
 
   <button id="uploadBtn" onclick="upload()">Upload File</button>
 
-  <p id="result"></p>
+  <div id="result"></div>
+
 </div>
 
+<!-- FILE ACCESS PAGE -->
 <div id="filePage" class="card hidden">
-  <h1>Access File</h1>
 
-  <input type="text" id="codeInput" placeholder="File Code (optional override)">
+  <h1>Access File</h1>
+  <p class="subtext">Enter code + password to unlock</p>
+
+  <input type="text" id="codeInput" placeholder="File Code (optional)">
   <input type="password" id="filePass" placeholder="Password">
 
-  <button onclick="loadFile()">Unlock</button>
+  <button onclick="loadFile()">Unlock File</button>
 
   <div id="output"></div>
+
 </div>
+
 <script src="app.js"></script>
 </body>
 </html>
