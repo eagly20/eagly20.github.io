@@ -1,13 +1,18 @@
 const API = "https://script.google.com/macros/s/AKfycbxL48kBadx5lhS0lo54jKsUUJknwAZ4Gv42eRJzjW-gnRrfUiVzo7-n5UQ1-dIG0jhhvw/exec";
 
-/* ---------------- ROUTING ---------------- */
+/* ---------------- ROUTING FIX ---------------- */
 
 function getSlug() {
-  const parts = window.location.pathname.split("/");
-  return parts[1] === "file" ? parts[2] : null;
+  const path = window.location.pathname;
+  const parts = path.split("/").filter(Boolean);
+
+  const i = parts.indexOf("file");
+  if (i !== -1 && parts[i + 1]) return parts[i + 1];
+
+  return null;
 }
 
-let slug = getSlug();
+const slug = getSlug();
 
 window.onload = () => {
   document.getElementById("uploadPage").classList.toggle("hidden", !!slug);
@@ -54,24 +59,21 @@ function upload() {
     form.appendChild(input);
     document.body.appendChild(form);
 
-    form.submit(); // NO CORS ISSUE
+    form.submit();
   };
 
   reader.readAsDataURL(file);
 }
 
-/* ---------------- ACCESS FILE ---------------- */
+/* ---------------- LOAD FILE ---------------- */
 
 async function loadFile() {
   const pass = document.getElementById("filePass").value;
-
-  // optional manual override
-  const manualCode = document.getElementById("codeInput").value;
-
-  const code = manualCode || slug;
+  const code = document.getElementById("codeInput").value || slug;
 
   if (!code || !pass) {
-    alert("Missing code or password");
+    document.getElementById("output").innerHTML =
+      "<p style='color:red'>Enter code + password</p>";
     return;
   }
 
@@ -83,35 +85,41 @@ async function loadFile() {
 
   if (!data.success) {
     document.getElementById("output").innerHTML =
-      "❌ Wrong code or password";
+      "<p style='color:red'>❌ Wrong code or password</p>";
     return;
   }
 
   const url = `https://drive.google.com/uc?export=download&id=${data.fileId}`;
 
-  let html = `
-    <div><b>${data.name}</b></div>
-    <a href="${url}" target="_blank">⬇ Download</a>
-    <br><br>
-  `;
-
-  /* ---------------- PREVIEW ---------------- */
+  let preview = "";
 
   if (data.mime.startsWith("image/")) {
-    html += `<img src="${url}">`;
+    preview = `<img class="preview" src="${url}">`;
   }
 
   else if (data.mime.startsWith("video/")) {
-    html += `<video controls src="${url}"></video>`;
+    preview = `<video class="preview" controls src="${url}"></video>`;
   }
 
   else if (data.mime.startsWith("audio/")) {
-    html += `<audio controls src="${url}"></audio>`;
+    preview = `<audio class="preview" controls src="${url}"></audio>`;
   }
 
-  else if (data.mime.includes("text")) {
-    html += `<iframe src="${url}" style="width:100%;height:300px;border:none"></iframe>`;
+  else {
+    preview = `<p>No preview available</p>`;
   }
 
-  document.getElementById("output").innerHTML = html;
+  document.getElementById("output").innerHTML = `
+    <div class="file-box">
+
+      <h3>${data.name}</h3>
+
+      <a class="download-btn" href="${url}" target="_blank">
+        ⬇ Download File
+      </a>
+
+      ${preview}
+
+    </div>
+  `;
 }
