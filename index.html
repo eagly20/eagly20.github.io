@@ -3,17 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Secure Cloud Locker</title>
+  <title>Cloud Locker</title>
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<!-- UPLOAD PAGE -->
+<!-- UPLOAD -->
 <div id="uploadPage" class="card">
 
   <h1>Cloud Locker</h1>
-  <p class="subtext">Upload a file and get a secure access code</p>
+  <p class="subtext">Upload file → get secure code</p>
 
   <input type="file" id="file">
   <input type="password" id="pass" placeholder="Set Password">
@@ -24,13 +24,13 @@
 
 </div>
 
-<!-- FILE ACCESS PAGE -->
+<!-- FILE ACCESS -->
 <div id="filePage" class="card hidden">
 
   <h1>Access File</h1>
-  <p class="subtext">Enter code + password to unlock</p>
+  <p class="subtext">Enter code + password</p>
 
-  <input type="text" id="codeInput" placeholder="File Code (optional)">
+  <input type="text" id="codeInput" placeholder="File Code">
   <input type="password" id="filePass" placeholder="Password">
 
   <button onclick="loadFile()">Unlock File</button>
