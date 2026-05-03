@@ -1,4 +1,6 @@
-const API = "https://script.google.com/macros/s/AKfycbz3YMLYzA1_vNDP5zETy5_zKzi__5qA62JgoPK0_Uw5wfewDo56JymalsmZiT_g20uSpw/exec";
+const API = "https://script.google.com/macros/s/AKfycbzpTBMDzrdte5XnLx1E1WQXQnSfITUkjIzM-CDbNYk0EQW_KRDahDIBbmkoegmxBidRPQ/exec";
+
+/* ---------------- ROUTER ---------------- */
 
 function getSlug() {
   const p = window.location.pathname.split("/");
@@ -12,7 +14,7 @@ window.onload = () => {
   document.getElementById("filePage").classList.toggle("hidden", !slug);
 };
 
-/* ---------------- UPLOAD (NO CORS) ---------------- */
+/* ---------------- UPLOAD (NO FETCH POST) ---------------- */
 
 function upload() {
   const file = document.getElementById("file").files[0];
@@ -42,13 +44,13 @@ function upload() {
     form.appendChild(input);
     document.body.appendChild(form);
 
-    form.submit(); // 🔥 NO CORS HERE
+    form.submit();
   };
 
   reader.readAsDataURL(file);
 }
 
-/* ---------------- LOAD FILE ---------------- */
+/* ---------------- DOWNLOAD ---------------- */
 
 async function loadFile() {
   const pass = document.getElementById("filePass").value;
@@ -64,14 +66,18 @@ async function loadFile() {
     return;
   }
 
+  const url = `https://drive.google.com/uc?export=download&id=${data.fileId}`;
+
   let html = `
-    <a href="${data.url}" target="_blank">Download</a><br><br>
+    <a href="${url}" target="_blank">⬇ Download</a><br><br>
   `;
 
   if (data.mime.startsWith("image/")) {
-    html += `<img src="${data.url}">`;
+    html += `<img src="${url}">`;
   } else if (data.mime.startsWith("video/")) {
-    html += `<video controls src="${data.url}"></video>`;
+    html += `<video controls src="${url}"></video>`;
+  } else if (data.mime.startsWith("audio/")) {
+    html += `<audio controls src="${url}"></audio>`;
   }
 
   document.getElementById("output").innerHTML = html;
