@@ -1,26 +1,36 @@
-const API = "https://script.google.com/macros/s/AKfycbzodpMhrhUjFSA5-mnfsw3YSjDFq_Tksu7LAPGC8mnXm2vFYyqoPdbzlD-AprS-2z6efA/exec";
+const API = "https://script.google.com/macros/s/AKfycbxL48kBadx5lhS0lo54jKsUUJknwAZ4Gv42eRJzjW-gnRrfUiVzo7-n5UQ1-dIG0jhhvw/exec";
 
-/* ---------------- ROUTER ---------------- */
+/* ---------------- ROUTING ---------------- */
 
 function getSlug() {
-  const p = window.location.pathname.split("/");
-  return p[1] === "file" ? p[2] : null;
+  const parts = window.location.pathname.split("/");
+  return parts[1] === "file" ? parts[2] : null;
 }
 
-const slug = getSlug();
+let slug = getSlug();
 
 window.onload = () => {
   document.getElementById("uploadPage").classList.toggle("hidden", !!slug);
   document.getElementById("filePage").classList.toggle("hidden", !slug);
 };
 
-/* ---------------- UPLOAD (NO FETCH POST) ---------------- */
+/* ---------------- UPLOAD ---------------- */
+
+let uploading = false;
 
 function upload() {
+  if (uploading) return;
+
   const file = document.getElementById("file").files[0];
   const pass = document.getElementById("pass").value;
 
-  if (!file || !pass) return alert("Missing fields");
+  if (!file || !pass) return alert("Missing file or password");
+
+  uploading = true;
+
+  const btn = document.getElementById("uploadBtn");
+  btn.disabled = true;
+  btn.innerText = "Uploading...";
 
   const reader = new FileReader();
 
@@ -44,40 +54,63 @@ function upload() {
     form.appendChild(input);
     document.body.appendChild(form);
 
-    form.submit();
+    form.submit(); // NO CORS ISSUE
   };
 
   reader.readAsDataURL(file);
 }
 
-/* ---------------- DOWNLOAD ---------------- */
+/* ---------------- ACCESS FILE ---------------- */
 
 async function loadFile() {
   const pass = document.getElementById("filePass").value;
 
+  // optional manual override
+  const manualCode = document.getElementById("codeInput").value;
+
+  const code = manualCode || slug;
+
+  if (!code || !pass) {
+    alert("Missing code or password");
+    return;
+  }
+
   const res = await fetch(
-    `${API}?action=get&id=${slug}&password=${pass}`
+    `${API}?action=get&id=${code}&password=${pass}`
   );
 
   const data = await res.json();
 
   if (!data.success) {
-    document.getElementById("output").innerText = "Wrong password";
+    document.getElementById("output").innerHTML =
+      "❌ Wrong code or password";
     return;
   }
 
   const url = `https://drive.google.com/uc?export=download&id=${data.fileId}`;
 
   let html = `
-    <a href="${url}" target="_blank">⬇ Download</a><br><br>
+    <div><b>${data.name}</b></div>
+    <a href="${url}" target="_blank">⬇ Download</a>
+    <br><br>
   `;
+
+  /* ---------------- PREVIEW ---------------- */
 
   if (data.mime.startsWith("image/")) {
     html += `<img src="${url}">`;
-  } else if (data.mime.startsWith("video/")) {
+  }
+
+  else if (data.mime.startsWith("video/")) {
     html += `<video controls src="${url}"></video>`;
-  } else if (data.mime.startsWith("audio/")) {
+  }
+
+  else if (data.mime.startsWith("audio/")) {
     html += `<audio controls src="${url}"></audio>`;
+  }
+
+  else if (data.mime.includes("text")) {
+    html += `<iframe src="${url}" style="width:100%;height:300px;border:none"></iframe>`;
   }
 
   document.getElementById("output").innerHTML = html;
