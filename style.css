@@ -1,19 +1,19 @@
 body {
   margin: 0;
-  font-family: system-ui, Arial;
+  font-family: system-ui;
   color: white;
   text-align: center;
   overflow-x: hidden;
 }
 
-/* animated background */
+/* animated gradient */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
   background: linear-gradient(-45deg,#4facfe,#00f2fe,#a18cd1,#fbc2eb);
   background-size: 400% 400%;
-  animation: bg 10s infinite linear;
+  animation: bg 10s linear infinite;
   z-index: -1;
 }
 
@@ -23,7 +23,6 @@ body::before {
   100% { background-position: 0% 50%; }
 }
 
-/* main card */
 .card {
   width: 92%;
   max-width: 420px;
@@ -32,13 +31,6 @@ body::before {
   border-radius: 18px;
   background: rgba(0,0,0,0.6);
   backdrop-filter: blur(14px);
-  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-  animation: fadeIn 0.3s ease;
-}
-
-@keyframes fadeIn {
-  from { transform: translateY(10px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
 }
 
 .hidden {
@@ -48,7 +40,7 @@ body::before {
 .subtext {
   font-size: 13px;
   opacity: 0.7;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
 input {
@@ -79,10 +71,9 @@ button:hover {
 
 button:disabled {
   opacity: 0.5;
-  cursor: not-allowed;
 }
 
-/* file box */
+/* file display */
 .file-box {
   margin-top: 15px;
   padding: 15px;
@@ -90,7 +81,6 @@ button:disabled {
   background: rgba(255,255,255,0.08);
 }
 
-/* download button */
 .download-btn {
   display: inline-block;
   margin-top: 10px;
@@ -102,9 +92,8 @@ button:disabled {
   font-weight: bold;
 }
 
-/* preview */
 .preview {
-  margin-top: 10px;
   width: 100%;
+  margin-top: 10px;
   border-radius: 10px;
 }
