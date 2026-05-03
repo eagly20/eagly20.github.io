@@ -1,6 +1,7 @@
-const API = "https://script.google.com/macros/s/AKfycbwAfrRmymeQaW9YQX9zuhiCaxzrhThBNNOGhSo0_Oj5fdJ1cbt-G-CZ7ybzXbgaTwyMeQ/exec";
+const API = "https://script.google.com/macros/s/AKfycbxQivcTVr_rGz7On-bXCPbn6co96KtaXxLVg3k2d3xCxXJqf8TKxX4orLhbIM27DQGnOA/exec";
 
-// router
+/* ---------------- ROUTE ---------------- */
+
 function getSlug() {
   const p = window.location.pathname.split("/");
   if (p[1] === "file") return p[2];
@@ -10,49 +11,60 @@ function getSlug() {
 const slug = getSlug();
 
 window.onload = () => {
-  document.getElementById("uploadPage").style.display = slug ? "none" : "block";
-  document.getElementById("filePage").style.display = slug ? "block" : "none";
+  document.getElementById("uploadPage").classList.toggle("hidden", !!slug);
+  document.getElementById("filePage").classList.toggle("hidden", !slug);
 };
 
-/* ---------------- UPLOAD (NO FETCH = NO CORS) ---------------- */
+/* ---------------- UPLOAD ---------------- */
 
-function upload() {
+async function upload() {
   const file = document.getElementById("file").files[0];
-  const pass = document.getElementById("upPass").value;
+  const pass = document.getElementById("pass").value;
 
   if (!file || !pass) return alert("Missing fields");
 
+  const btn = document.querySelector("button");
+  btn.disabled = true;
+  btn.innerText = "Uploading...";
+
   const reader = new FileReader();
 
-  reader.onload = function(e) {
+  reader.onload = async (e) => {
     const base64 = e.target.result.split(",")[1];
 
-    const form = document.createElement("form");
-    form.method = "POST";
-    form.action = API;
-
-    const input = document.createElement("input");
-    input.name = "payload";
-    input.value = JSON.stringify({
-      action: "upload",
-      base64,
-      fileName: file.name,
-      password: pass
+    const res = await fetch(API, {
+      method: "POST",
+      body: JSON.stringify({
+        action: "upload",
+        base64,
+        fileName: file.name,
+        mimeType: file.type,
+        password: pass
+      })
     });
 
-    form.appendChild(input);
-    document.body.appendChild(form);
+    const data = await res.json();
 
-    form.submit();
+    btn.disabled = false;
+    btn.innerText = "Upload";
+
+    if (data.success) {
+      const link = window.location.origin + "/file/" + data.id;
+
+      document.getElementById("result").innerHTML = `
+        <b>Code:</b> ${data.id}<br>
+        <a href="${link}">${link}</a>
+      `;
+    }
   };
 
   reader.readAsDataURL(file);
 }
 
-/* ---------------- DOWNLOAD (SAFE GET REQUEST) ---------------- */
+/* ---------------- LOAD ---------------- */
 
 async function loadFile() {
-  const pass = document.getElementById("downPass").value;
+  const pass = document.getElementById("filePass").value;
 
   const res = await fetch(
     `${API}?action=get&id=${slug}&password=${pass}`
@@ -65,18 +77,16 @@ async function loadFile() {
     return;
   }
 
-  const base = `data:${data.type};base64,${data.data}`;
-
   let html = `
-    <a href="${base}" download="${data.name}">Download</a><br><br>
+    <a href="${data.url}" target="_blank">⬇ Download File</a><br><br>
   `;
 
-  if (data.type.startsWith("image/")) {
-    html += `<img src="${base}">`;
-  } else if (data.type.startsWith("video/")) {
-    html += `<video controls src="${base}"></video>`;
-  } else if (data.type.startsWith("audio/")) {
-    html += `<audio controls src="${base}"></audio>`;
+  if (data.mime.startsWith("image/")) {
+    html += `<img src="${data.url}">`;
+  } else if (data.mime.startsWith("video/")) {
+    html += `<video controls src="${data.url}"></video>`;
+  } else if (data.mime.startsWith("audio/")) {
+    html += `<audio controls src="${data.url}"></audio>`;
   }
 
   document.getElementById("output").innerHTML = html;
