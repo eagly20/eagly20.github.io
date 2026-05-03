@@ -2,16 +2,16 @@ const API = "https://script.google.com/macros/s/AKfycbxOqoshDTtdySg5ftuGTACXlyiF
 
 let uploading = false;
 
-/* ---------------- UI SWITCH ---------------- */
+/* ---------------- SIMPLE SWITCH ---------------- */
 
 function showUpload() {
-  document.getElementById("uploadPage").classList.remove("hidden");
-  document.getElementById("filePage").classList.add("hidden");
+  document.getElementById("uploadView").classList.remove("hidden");
+  document.getElementById("accessView").classList.add("hidden");
 }
 
 function showAccess() {
-  document.getElementById("uploadPage").classList.add("hidden");
-  document.getElementById("filePage").classList.remove("hidden");
+  document.getElementById("uploadView").classList.add("hidden");
+  document.getElementById("accessView").classList.remove("hidden");
 }
 
 window.onload = showUpload;
@@ -28,56 +28,36 @@ function upload() {
 
   uploading = true;
 
-  const btn = document.getElementById("uploadBtn");
-  btn.disabled = true;
-  btn.innerText = "Uploading...";
-
   const reader = new FileReader();
 
   reader.onload = async (e) => {
     const base64 = e.target.result.split(",")[1];
 
-    try {
-      const res = await fetch(API, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "upload",
-          base64,
-          fileName: file.name,
-          mimeType: file.type,
-          password: pass
-        })
-      });
+    const res = await fetch(API, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action: "upload",
+        base64,
+        fileName: file.name,
+        mimeType: file.type,
+        password: pass
+      })
+    });
 
-      const data = await res.json();
+    const data = await res.json();
 
-      uploading = false;
-      btn.disabled = false;
-      btn.innerText = "Upload File";
+    uploading = false;
 
-      if (data.success) {
-        document.getElementById("result").innerHTML = `
-          <div class="file-box">
-            <b>File Code:</b> ${data.id}<br><br>
-
-            <button onclick="openAccess('${data.id}')">
-              Open File
-            </button>
-          </div>
-        `;
-      } else {
-        document.getElementById("result").innerHTML =
-          "<p style='color:red'>Upload failed</p>";
-      }
-
-    } catch (err) {
-      uploading = false;
-      btn.disabled = false;
-      btn.innerText = "Upload File";
-
-      document.getElementById("result").innerHTML =
-        "<p style='color:red'>Error uploading</p>";
+    if (data.success) {
+      document.getElementById("result").innerHTML = `
+        <div class="box">
+          <b>Code:</b> ${data.id}<br><br>
+          <button onclick="openAccess('${data.id}')">Open File</button>
+        </div>
+      `;
+    } else {
+      document.getElementById("result").innerHTML = "Upload failed";
     }
   };
 
@@ -88,26 +68,21 @@ function upload() {
 
 function openAccess(code) {
   showAccess();
-  document.getElementById("codeInput").value = code;
+  document.getElementById("code").value = code;
 }
 
 /* ---------------- LOAD FILE ---------------- */
 
 async function loadFile() {
+  const code = document.getElementById("code").value;
   const pass = document.getElementById("filePass").value;
-  const code = document.getElementById("codeInput").value;
 
-  if (!code || !pass) return alert("Enter code + password");
-
-  const res = await fetch(
-    `${API}?action=get&id=${code}&password=${pass}`
-  );
-
+  const res = await fetch(`${API}?action=get&id=${code}&password=${pass}`);
   const data = await res.json();
 
   if (!data.success) {
     document.getElementById("output").innerHTML =
-      "<p style='color:red'>Wrong code or password</p>";
+      "<p style='color:red'>Wrong code/password</p>";
     return;
   }
 
@@ -121,21 +96,13 @@ async function loadFile() {
     preview = `<video class="preview" controls src="${url}"></video>`;
   } else if (data.mime.startsWith("audio/")) {
     preview = `<audio class="preview" controls src="${url}"></audio>`;
-  } else {
-    preview = `<p>No preview available</p>`;
   }
 
   document.getElementById("output").innerHTML = `
-    <div class="file-box">
-
+    <div class="box">
       <h3>${data.name}</h3>
-
-      <a class="download-btn" href="${url}" target="_blank">
-        ⬇ Download
-      </a>
-
+      <a class="download" href="${url}" target="_blank">Download</a>
       ${preview}
-
     </div>
   `;
 }
