@@ -1,83 +1,52 @@
 const API = "https://script.google.com/macros/s/AKfycbxOqoshDTtdySg5ftuGTACXlyiFgBxFwOGobb-Llt67p1SAV4o-C3SDHx-oRiz1O2hvig/exec";
 
-let uploading = false;
-
-/* ---------------- SIMPLE SWITCH ---------------- */
-
-function showUpload() {
-  document.getElementById("uploadView").classList.remove("hidden");
-  document.getElementById("accessView").classList.add("hidden");
-}
-
-function showAccess() {
-  document.getElementById("uploadView").classList.add("hidden");
-  document.getElementById("accessView").classList.remove("hidden");
-}
-
-window.onload = showUpload;
-
-/* ---------------- UPLOAD ---------------- */
+/* ---------------- UPLOAD (NO CORS PRE-FLIGHT) ---------------- */
 
 function upload() {
-  if (uploading) return;
-
   const file = document.getElementById("file").files[0];
   const pass = document.getElementById("pass").value;
 
   if (!file || !pass) return alert("Missing file or password");
 
-  uploading = true;
-
   const reader = new FileReader();
 
-  reader.onload = async (e) => {
+  reader.onload = (e) => {
     const base64 = e.target.result.split(",")[1];
 
-    const res = await fetch(API, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        action: "upload",
-        base64,
-        fileName: file.name,
-        mimeType: file.type,
-        password: pass
-      })
+    // 🔥 IMPORTANT: use FORM POST instead of fetch JSON
+    const form = document.createElement("form");
+    form.method = "POST";
+    form.action = API;
+
+    const input = document.createElement("input");
+    input.name = "payload";
+    input.value = JSON.stringify({
+      action: "upload",
+      base64,
+      fileName: file.name,
+      mimeType: file.type,
+      password: pass
     });
 
-    const data = await res.json();
+    form.appendChild(input);
+    document.body.appendChild(form);
 
-    uploading = false;
-
-    if (data.success) {
-      document.getElementById("result").innerHTML = `
-        <div class="box">
-          <b>Code:</b> ${data.id}<br><br>
-          <button onclick="openAccess('${data.id}')">Open File</button>
-        </div>
-      `;
-    } else {
-      document.getElementById("result").innerHTML = "Upload failed";
-    }
+    form.submit(); // NO CORS ERROR
   };
 
   reader.readAsDataURL(file);
 }
 
-/* ---------------- OPEN ACCESS ---------------- */
-
-function openAccess(code) {
-  showAccess();
-  document.getElementById("code").value = code;
-}
-
-/* ---------------- LOAD FILE ---------------- */
+/* ---------------- LOAD FILE (SAFE GET REQUEST) ---------------- */
 
 async function loadFile() {
   const code = document.getElementById("code").value;
   const pass = document.getElementById("filePass").value;
 
-  const res = await fetch(`${API}?action=get&id=${code}&password=${pass}`);
+  const res = await fetch(
+    `${API}?action=get&id=${code}&password=${pass}`
+  );
+
   const data = await res.json();
 
   if (!data.success) {
@@ -91,17 +60,17 @@ async function loadFile() {
   let preview = "";
 
   if (data.mime.startsWith("image/")) {
-    preview = `<img class="preview" src="${url}">`;
+    preview = `<img src="${url}">`;
   } else if (data.mime.startsWith("video/")) {
-    preview = `<video class="preview" controls src="${url}"></video>`;
+    preview = `<video controls src="${url}"></video>`;
   } else if (data.mime.startsWith("audio/")) {
-    preview = `<audio class="preview" controls src="${url}"></audio>`;
+    preview = `<audio controls src="${url}"></audio>`;
   }
 
   document.getElementById("output").innerHTML = `
     <div class="box">
       <h3>${data.name}</h3>
-      <a class="download" href="${url}" target="_blank">Download</a>
+      <a href="${url}" target="_blank">Download</a>
       ${preview}
     </div>
   `;
