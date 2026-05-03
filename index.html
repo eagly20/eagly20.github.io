@@ -1,26 +1,38 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>File Locker</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Secure File Locker</title>
+  <link rel="stylesheet" href="style.css"/>
 </head>
+
 <body>
 
-<div id="uploadPage" class="card">
-  <h2>Upload File</h2>
-  <input type="file" id="file">
-  <input type="password" id="upPass" placeholder="Password">
-  <button onclick="upload()">Upload</button>
-  <p id="upResult"></p>
-</div>
+  <div class="background"></div>
 
-<div id="filePage" class="card" style="display:none">
-  <h2>File Access</h2>
-  <input type="password" id="downPass" placeholder="Password">
-  <button onclick="loadFile()">Unlock</button>
-  <div id="output"></div>
-</div>
+  <!-- UPLOAD PAGE -->
+  <div id="uploadPage" class="card">
+    <h1>File Locker</h1>
 
-<script src="app.js"></script>
+    <input type="file" id="file" />
+    <input type="password" id="upPass" placeholder="Set Password" />
+
+    <button id="uploadBtn" onclick="upload()">Upload File</button>
+
+    <p id="upResult"></p>
+  </div>
+
+  <!-- FILE ACCESS PAGE -->
+  <div id="filePage" class="card hidden">
+    <h1>Unlock File</h1>
+
+    <input type="password" id="downPass" placeholder="Enter Password" />
+    <button onclick="loadFile()">Unlock</button>
+
+    <div id="output"></div>
+  </div>
+
+  <script src="app.js"></script>
 </body>
 </html>
