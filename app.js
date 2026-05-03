@@ -1,4 +1,4 @@
-const API = "https://script.google.com/macros/s/AKfycbzHyTwtjwaJSrc3DtBnO9ZC4HVqS4RUss4LGY_Z0Kre9l85jJFezObrUy5BXl_u0fo5Lw/exec";
+const API = "https://script.google.com/macros/s/AKfycbwJ-E4suu9Ay0K9xUdLpYe4Vee8ygpxpv1jz3DHnprsxbZRz2e5E81xzbXm7ClLdKhIxw/exec";
 
 /* ---------------- UPLOAD (SAFE FORM POST) ---------------- */
 
