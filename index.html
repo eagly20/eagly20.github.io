@@ -1,28 +1,32 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Cloud Locker</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Secure Cloud Locker</title>
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
 <div id="uploadPage" class="card">
-  <h1>Upload File</h1>
+  <h1>Cloud Locker</h1>
 
   <input type="file" id="file">
-  <input type="password" id="pass" placeholder="Password">
+  <input type="password" id="pass" placeholder="Set Password">
 
-  <button onclick="upload()">Upload</button>
+  <button id="uploadBtn" onclick="upload()">Upload File</button>
 
   <p id="result"></p>
 </div>
 
 <div id="filePage" class="card hidden">
-  <h1>Unlock File</h1>
+  <h1>Access File</h1>
 
-  <input type="password" id="filePass">
-  <button onclick="loadFile()">Open</button>
+  <input type="text" id="codeInput" placeholder="File Code (optional override)">
+  <input type="password" id="filePass" placeholder="Password">
+
+  <button onclick="loadFile()">Unlock</button>
 
   <div id="output"></div>
 </div>
