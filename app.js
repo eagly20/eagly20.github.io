@@ -1,4 +1,4 @@
-const API = "PASTE_YOUR_APPS_SCRIPT_URL";
+const API = "https://script.google.com/macros/s/AKfycbxEAFo7WiMjMW22kv4G-aQMFo-PyvUA7Ci9pZ8azZmzbnzXEUvItG52wa5qltYO7lgWPA/exec";
 
 // 🔥 "slug" router
 function getSlug() {
