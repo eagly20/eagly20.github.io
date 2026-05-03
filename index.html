@@ -1,10 +1,95 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Cloud Locker Pro</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cloud Locker Pro</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: system-ui;
+  color: white;
+  text-align: center;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(-45deg,#4facfe,#00f2fe,#a18cd1,#fbc2eb);
+  background-size: 400% 400%;
+  animation: bg 10s linear infinite;
+  z-index: -1;
+}
+
+@keyframes bg {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.card {
+  width: 92%;
+  max-width: 450px;
+  margin: 60px auto;
+  padding: 22px;
+  border-radius: 18px;
+  background: rgba(0,0,0,0.65);
+  backdrop-filter: blur(14px);
+}
+
+input {
+  width: 100%;
+  padding: 12px;
+  margin: 8px 0;
+  border-radius: 10px;
+  border: none;
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  border-radius: 10px;
+  border: none;
+  background: #00c6ff;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button:hover {
+  transform: scale(1.02);
+}
+
+.hidden { display: none; }
+
+.box {
+  margin-top: 15px;
+  padding: 15px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.08);
+}
+
+.preview {
+  width: 100%;
+  margin-top: 10px;
+  border-radius: 10px;
+}
+
+.download {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 10px;
+  background: #00c6ff;
+  border-radius: 8px;
+  color: white;
+  text-decoration: none;
+}
+</style>
+
 </head>
 
 <body>
@@ -12,33 +97,25 @@
 <div class="card">
 
   <h1>Cloud Locker</h1>
-  <p class="subtext">Secure upload + password protected files</p>
 
-  <!-- NAV BUTTONS -->
-  <div class="tabs">
-    <button onclick="showUpload()">Upload</button>
-    <button onclick="showAccess()">Access</button>
-  </div>
-
-  <!-- UPLOAD SECTION -->
-  <div id="uploadPage">
+  <!-- UPLOAD -->
+  <div id="uploadView">
 
     <input type="file" id="file">
-    <input type="password" id="pass" placeholder="Set Password">
+    <input type="password" id="pass" placeholder="Password">
 
-    <button id="uploadBtn" onclick="upload()">Upload File</button>
+    <button onclick="upload()">Upload</button>
 
     <div id="result"></div>
-
   </div>
 
-  <!-- ACCESS SECTION -->
-  <div id="filePage" class="hidden">
+  <!-- ACCESS -->
+  <div id="accessView" class="hidden">
 
-    <input type="text" id="codeInput" placeholder="File Code">
+    <input type="text" id="code" placeholder="File Code">
     <input type="password" id="filePass" placeholder="Password">
 
-    <button onclick="loadFile()">Unlock File</button>
+    <button onclick="loadFile()">Open File</button>
 
     <div id="output"></div>
 
