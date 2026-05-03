@@ -1,15 +1,13 @@
 const API = "https://script.google.com/macros/s/AKfycbxL48kBadx5lhS0lo54jKsUUJknwAZ4Gv42eRJzjW-gnRrfUiVzo7-n5UQ1-dIG0jhhvw/exec";
 
-/* ---------------- ROUTING FIX ---------------- */
+let uploading = false;
+
+/* ---------------- ROUTING ---------------- */
 
 function getSlug() {
-  const path = window.location.pathname;
-  const parts = path.split("/").filter(Boolean);
-
+  const parts = window.location.pathname.split("/").filter(Boolean);
   const i = parts.indexOf("file");
-  if (i !== -1 && parts[i + 1]) return parts[i + 1];
-
-  return null;
+  return (i !== -1 && parts[i + 1]) ? parts[i + 1] : null;
 }
 
 const slug = getSlug();
@@ -19,9 +17,7 @@ window.onload = () => {
   document.getElementById("filePage").classList.toggle("hidden", !slug);
 };
 
-/* ---------------- UPLOAD ---------------- */
-
-let uploading = false;
+/* ---------------- UPLOAD (FIXED + SHOW CODE) ---------------- */
 
 function upload() {
   if (uploading) return;
@@ -39,27 +35,54 @@ function upload() {
 
   const reader = new FileReader();
 
-  reader.onload = (e) => {
+  reader.onload = async (e) => {
     const base64 = e.target.result.split(",")[1];
 
-    const form = document.createElement("form");
-    form.method = "POST";
-    form.action = API;
+    try {
+      const res = await fetch(API, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          action: "upload",
+          base64,
+          fileName: file.name,
+          mimeType: file.type,
+          password: pass
+        })
+      });
 
-    const input = document.createElement("input");
-    input.name = "payload";
-    input.value = JSON.stringify({
-      action: "upload",
-      base64,
-      fileName: file.name,
-      mimeType: file.type,
-      password: pass
-    });
+      const data = await res.json();
 
-    form.appendChild(input);
-    document.body.appendChild(form);
+      uploading = false;
+      btn.disabled = false;
+      btn.innerText = "Upload File";
 
-    form.submit();
+      if (data.success) {
+        const link = `${window.location.origin}/file/${data.id}`;
+
+        document.getElementById("result").innerHTML = `
+          <div class="file-box">
+            <b>File Code:</b> ${data.id}<br><br>
+            <a class="download-btn" href="${link}">
+              Open File Page
+            </a>
+          </div>
+        `;
+      } else {
+        document.getElementById("result").innerHTML =
+          "<p style='color:red'>Upload failed</p>";
+      }
+
+    } catch (err) {
+      uploading = false;
+      btn.disabled = false;
+      btn.innerText = "Upload File";
+
+      document.getElementById("result").innerHTML =
+        "<p style='color:red'>Error uploading</p>";
+    }
   };
 
   reader.readAsDataURL(file);
@@ -72,9 +95,7 @@ async function loadFile() {
   const code = document.getElementById("codeInput").value || slug;
 
   if (!code || !pass) {
-    document.getElementById("output").innerHTML =
-      "<p style='color:red'>Enter code + password</p>";
-    return;
+    return alert("Enter code + password");
   }
 
   const res = await fetch(
@@ -85,7 +106,7 @@ async function loadFile() {
 
   if (!data.success) {
     document.getElementById("output").innerHTML =
-      "<p style='color:red'>❌ Wrong code or password</p>";
+      "<p style='color:red'>Wrong code or password</p>";
     return;
   }
 
@@ -95,17 +116,11 @@ async function loadFile() {
 
   if (data.mime.startsWith("image/")) {
     preview = `<img class="preview" src="${url}">`;
-  }
-
-  else if (data.mime.startsWith("video/")) {
+  } else if (data.mime.startsWith("video/")) {
     preview = `<video class="preview" controls src="${url}"></video>`;
-  }
-
-  else if (data.mime.startsWith("audio/")) {
+  } else if (data.mime.startsWith("audio/")) {
     preview = `<audio class="preview" controls src="${url}"></audio>`;
-  }
-
-  else {
+  } else {
     preview = `<p>No preview available</p>`;
   }
 
@@ -115,7 +130,7 @@ async function loadFile() {
       <h3>${data.name}</h3>
 
       <a class="download-btn" href="${url}" target="_blank">
-        ⬇ Download File
+        ⬇ Download
       </a>
 
       ${preview}
