@@ -3,39 +3,46 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Cloud Locker</title>
+  <title>Cloud Locker Pro</title>
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<!-- UPLOAD -->
-<div id="uploadPage" class="card">
+<div class="card">
 
   <h1>Cloud Locker</h1>
-  <p class="subtext">Upload file → get secure code</p>
+  <p class="subtext">Secure upload + password protected files</p>
 
-  <input type="file" id="file">
-  <input type="password" id="pass" placeholder="Set Password">
+  <!-- NAV BUTTONS -->
+  <div class="tabs">
+    <button onclick="showUpload()">Upload</button>
+    <button onclick="showAccess()">Access</button>
+  </div>
 
-  <button id="uploadBtn" onclick="upload()">Upload File</button>
+  <!-- UPLOAD SECTION -->
+  <div id="uploadPage">
 
-  <div id="result"></div>
+    <input type="file" id="file">
+    <input type="password" id="pass" placeholder="Set Password">
 
-</div>
+    <button id="uploadBtn" onclick="upload()">Upload File</button>
 
-<!-- FILE ACCESS -->
-<div id="filePage" class="card hidden">
+    <div id="result"></div>
 
-  <h1>Access File</h1>
-  <p class="subtext">Enter code + password</p>
+  </div>
 
-  <input type="text" id="codeInput" placeholder="File Code">
-  <input type="password" id="filePass" placeholder="Password">
+  <!-- ACCESS SECTION -->
+  <div id="filePage" class="hidden">
 
-  <button onclick="loadFile()">Unlock File</button>
+    <input type="text" id="codeInput" placeholder="File Code">
+    <input type="password" id="filePass" placeholder="Password">
 
-  <div id="output"></div>
+    <button onclick="loadFile()">Unlock File</button>
+
+    <div id="output"></div>
+
+  </div>
 
 </div>
 
