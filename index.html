@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>File Locker</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="uploadPage" class="card">
+  <h2>Upload File</h2>
+  <input type="file" id="file">
+  <input type="password" id="upPass" placeholder="Password">
+  <button onclick="upload()">Upload</button>
+  <p id="upResult"></p>
+</div>
+
+<div id="filePage" class="card" style="display:none">
+  <h2>File Access</h2>
+  <input type="password" id="downPass" placeholder="Password">
+  <button onclick="loadFile()">Unlock</button>
+  <div id="output"></div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
